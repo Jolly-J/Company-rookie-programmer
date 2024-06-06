@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>反馈记录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 添加视口元标签 -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .feedback-card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .feedback-card img {
+            max-width: 80px;  /* 缩略图的最大宽度 */
+            max-height: 80px; /* 缩略图的最大高度 */
+            border-radius: 8px;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .feedback-card .header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .feedback-card .header img {
+            margin-right: 20px;
+        }
+        .feedback-card .header .text {
+            flex-grow: 1;
+        }
+        .feedback-card h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #007bff;
+            cursor: pointer;
+        }
+        .feedback-card p {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .feedback-card .description {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3; /* 限制显示三行 */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .buttons {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+        .buttons button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+        }
+        .buttons .home-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="buttons">
+        <button class="home-btn" onclick="window.location.href='{{ url_for('index') }}'">返回首页</button>
+    </div>
+    <h2 style="text-align:center;">反馈记录</h2>
+    {% for feedback in feedbacks %}
+    <div class="feedback-card" onclick="window.location.href='{{ url_for('feedback_detail', feedback_id=feedback[0]) }}'">
+        <div class="header">
+            {% if feedback[4] %}
+            <img src="{{ url_for('uploaded_file', filename=feedback[4]) }}" alt="反馈图片">
+            {% endif %}
+            <div class="text">
+                <h3>{{ feedback[1] }}</h3>
+                <p><strong>时间:</strong> {{ feedback[5] }}</p>
+                <p><strong>类型:</strong> {{ '反馈' if feedback[2] == 'positive' else '表扬' }}</p>
+            </div>
+        </div>
+        <p class="description">{{ feedback[3] }}</p>
+    </div>
+    {% endfor %}
+</body>
+</html>

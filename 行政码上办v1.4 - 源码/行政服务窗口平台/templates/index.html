@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>行政服务平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin: 20px;
+        }
+        .header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .header img {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            cursor: pointer;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .user-info img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        .user-details {
+            font-size: 18px;
+        }
+        .user-details p {
+            margin: 5px 0;
+        }
+        .module {
+            margin-top: 5px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .module-icon {
+            width: 48px;
+            height: 48px;
+            margin-right: 15px;
+        }
+        .module h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .module h3 {
+            margin: 0px;
+            font-size: 5px;
+        }
+        .module a {
+            text-decoration: none;
+            color: #007bff;
+            margin-left: auto;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+        .notice {
+            display: none;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            padding-top: 40vh;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script src="https://g.alicdn.com/dingding/dingtalk-jsapi/2.10.3/dingtalk.open.js"></script>
+    <script>
+        function isDingTalk() {
+            var ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf('dingtalk') !== -1;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!isDingTalk()) {
+                document.getElementById('main-content').classList.add('hidden');
+                document.getElementById('notice').style.display = 'block';
+            } else {
+                document.getElementById('main-content').classList.remove('hidden');
+
+                dd.ready(function() {
+                    dd.runtime.permission.requestAuthCode({
+                        corpId: "xxxxxxxxx",
+                        onSuccess: function(result) {
+                            console.log('Auth code received:', result.code);
+                            fetch('/dingtalk_login', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ code: result.code })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('User data received:', data);
+                                if (data.error) {
+                                    console.error('Error:', data.details);
+                                } else {
+                                    document.getElementById('avatar').src = data.avatar;
+                                    document.getElementById('username').innerText = '你好，' + data.name + '!';
+                                    document.getElementById('job_number').innerText = '工号: ' + data.job_number;
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        },
+                        onFail: function(err) {
+                            console.error('Auth code request failed: ', err);
+                        }
+                    });
+                });
+
+                dd.error(function(err) {
+                    console.error('dd error: ', err);
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="notice" class="notice">请使用钉钉扫码，在钉钉内部打开。</div>
+    <div id="main-content" class="container hidden">
+        <div class="header">
+            <img src="{{ url_for('static', filename='dock.png') }}" alt="Dock Image">
+        </div>
+        <div class="user-info">
+            <img id="avatar" src="" alt="User Avatar">
+            <div class="user-details">
+                <p id="username">你好，username !</p>
+                <p id="job_number">工号: xxxxxxx</p>
+            </div>
+        </div>
+        <h3> 后勤保障：</h3>
+        <div class="module">
+            <img src="{{ url_for('static', filename='icons/canteen_service.png') }}" alt="餐厅服务" class="module-icon">
+            <h2>餐厅服务</h2>
+            <a href="{{ url_for('feedback_canteen') }}">反馈</a>
+        </div>
+
+        <div class="module">
+            <img src="{{ url_for('static', filename='icons/apartment_service.png') }}" alt="公寓服务" class="module-icon">
+            <h2>宿舍服务</h2>
+            <a href="{{ url_for('feedback_apartment') }}">反馈</a>
+        </div>
+
+        <div class="module">
+            <img src="{{ url_for('static', filename='icons/cleaning_service.png') }}" alt="保安服务" class="module-icon">
+            <h2>保洁服务</h2>
+            <a href="{{ url_for('feedback_cleaning') }}">反馈</a>
+        </div>
+
+        <div class="module">
+            <img src="{{ url_for('static', filename='icons/security_service.png') }}" alt="保洁服务" class="module-icon">
+            <h2>报修服务</h2>
+            <a href="{{ url_for('feedback_maintenance') }}">反馈</a>
+        </div>
+        <h3> 管理机制：</h3>
+        <div class="module">
+            <img src="{{ url_for('static', filename='icons/feedback.png') }}" alt="员工意见直通车" class="module-icon">
+            <h2>意见直通车</h2>
+            <a href="{{ url_for('feedback_daily') }}">反馈</a>
+        </div>
+    </div>
+</body>
+</html>

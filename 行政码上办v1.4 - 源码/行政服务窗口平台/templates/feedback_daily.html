@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>意见直通车</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 添加视口元标签 -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .form-group input, .form-group select, .form-group textarea, .form-group button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .form-group select {
+            appearance: none;
+        }
+        .form-group textarea {
+            resize: vertical;
+        }
+        .form-group button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .buttons button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 48%; /* 调整宽度，确保按钮不会挤在一起 */
+        }
+        .buttons .submit-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .buttons .submit-btn:hover {
+            background-color: #218838;
+        }
+        .buttons .reset-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .buttons .reset-btn:hover {
+            background-color: #c82333;
+        }
+        .home-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .home-btn {
+            padding: 4px 8px; /* 缩小按钮尺寸 */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px; /* 调整字体大小 */
+            background-color: #007bff;
+            color: white;
+        }
+        .home-btn:hover {
+            background-color: #0056b3;
+        }
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
+        .image-preview {
+            margin-top: 10px;
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .service-description, .service-standard {
+            margin-bottom: 20px;
+        }
+        .service-description p, .service-standard p {
+            margin: 0;
+            font-size: 16px;
+        }
+        .empty-line {
+            height: 20px; /* 设置空行的高度 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="home-button">
+            <button class="home-btn" onclick="window.location.href='{{ url_for('index') }}'">返回首页</button>
+        </div>
+        <h2 style="text-align:center;">意见直通车</h2>
+
+        <div class="service-description">
+            <label>服务描述：</label>
+            <div style="height: 10px;"></div>
+            <p>为了更好地倾听员工的声音，改善工作环境和管理流程，我们设置了意见直通车频道，包括但不限于奖惩、文化、流程等。您可以在此发送您对公司的任何建议或反馈，帮助公司不断进步和提升。</p>
+        </div>
+        <form id="feedbackForm" action="{{ url_for('submit_feedback') }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="service_type" value="意见直通车">
+
+            <div class="form-group">
+                <label for="file">上传图片</label>
+                <input type="file" id="file" name="file" accept="image/*" style="display:none;" onchange="previewImage(event)">
+                <button type="button" onclick="document.getElementById('file').click();">选择图片</button>
+                <img id="imagePreview" class="image-preview" style="display:none;" />
+            </div>
+            <hr>
+            <div class="form-group">
+                <label for="description">描述</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+            <div class="buttons">
+                <button type="submit" class="submit-btn">提交</button>
+                <button type="reset" class="reset-btn">重置</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+            var feedbackType = document.getElementById('feedback_type').value;
+            var description = document.getElementById('description').value;
+
+            if (feedbackNames === '' || feedbackIdNumber === '' || feedbackType === '' || description === '') {
+                alert('请填写所有必填项');
+                event.preventDefault();
+            }
+        });
+
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.getElementById('imagePreview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+</body>
+</html>
